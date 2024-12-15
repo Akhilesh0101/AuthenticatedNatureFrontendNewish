@@ -1,91 +1,129 @@
 import { Component, OnInit } from '@angular/core';
 import { CartService } from '../services/cart.service';
-import { PaymentService } from '../services/payment.service';
-import { NgModel } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AddressService } from '../services/address.service';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-payment',
-  standalone: false,
-  
   templateUrl: './payment.component.html',
-  styleUrl: './payment.component.css'
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  styleUrls: ['./payment.component.css']
 })
 export class PaymentComponent implements OnInit {
-  
   cartItems = [];
-
-  //saved add select 
   savedAddresses: any[] = [];
   newAddress: any = {
-    street: '',
-    phone: '',
-    city: '',
-    state: '',
-    country: '',
-    zipCode: ''
+    Street: '',
+    Phone: '',
+    City: '',
+    State: '',
+    Country: '',
+    ZipCode: ''
   };
   selectedAddress: any = null;
   isNewAddress: boolean = false;
 
-  constructor(private addressService: AddressService,public cartService: CartService, private router: Router) {}
+  constructor(
+    private addressService: AddressService,
+    public cartService: CartService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // Fetch saved addresses when the component initializes
     this.addressService.getSavedAddresses().subscribe((addresses) => {
       this.savedAddresses = addresses;
     });
-    this.cartItems = this.cartService.getCartItems();
 
+    // Get cart items
+    this.cartItems = this.cartService.getCartItems();
   }
 
-  // Switch to 'New Address' mode to allow the user to enter a new address
+  getCartTotal(): number {
+    return this.cartItems.reduce((total, item) => {
+      return total + item.product.Price * item.quantity;
+    }, 0);
+  }
+
+  // Methods to handle address selection and saving
   addNewAddress(): void {
     this.isNewAddress = true;
-    this.selectedAddress = null; // Clear any previously selected address
+    this.selectedAddress = null;
   }
 
-  // Select an existing address for shipping
   selectAddress(address: any): void {
-    this.selectedAddress = address;
-    this.isNewAddress = false; // Disable 'New Address' mode
+    this.selectedAddress = address;  // Set the selected address
+    this.isNewAddress = false;  // Switch off the "new address" form if a saved address is selected
   }
 
-  // Save the new address to the address book
+  // Method to edit an existing address
+  editAddress(address: any): void {
+    this.isNewAddress = true; // Switch to new address form to allow editing
+    this.newAddress = { ...address }; // Pre-fill the form with the existing address data
+    this.selectedAddress = null; // Deselect the current selected address
+  }
+
+  // Method to save the new or edited address
   saveNewAddress(): void {
-    this.addressService.addAddress(this.newAddress);
-    this.isNewAddress = false;
-    this.selectedAddress = this.newAddress; // Select the newly added address
-    this.resetNewAddressForm();
+    if (this.newAddress.UserId) {
+      // If there's a UserId, it means we're editing an existing address
+      this.addressService.updateAddress(this.newAddress).subscribe(() => {
+        // Update the savedAddresses list with the edited address
+        const index = this.savedAddresses.findIndex(addr => addr.AddressId === this.newAddress.AddressId);
+        if (index !== -1) {
+          this.savedAddresses[index] = this.newAddress;
+        }
+        this.isNewAddress = false; // Close the address form
+        this.selectedAddress = this.newAddress; // Set the edited address as selected
+        this.resetNewAddressForm();
+      });
+    } else {
+      // If no UserId, we are adding a new address
+      this.addressService.addAddress(this.newAddress).subscribe(() => {
+        this.savedAddresses.push(this.newAddress); // Add the new address to the list
+        this.isNewAddress = false;
+        this.selectedAddress = this.newAddress;
+        this.resetNewAddressForm();
+      });
+    }
   }
 
-  // Reset the new address form
+  // Method to reset the new address form
   resetNewAddressForm(): void {
     this.newAddress = {
-      street: '',
-      phone: '',
-      city: '',
-      state: '',
-      country: '',
-      zipCode: ''
+      Street: '',
+      Phone: '',
+      City: '',
+      State: '',
+      Country: '',
+      ZipCode: ''
     };
   }
 
-  // Submit the payment along with the selected address
+  // Method to delete an address
+  deleteAddress(address: any): void {
+    this.addressService.removeAddress(address.AddressId).subscribe(() => {
+      // After deletion, filter out the deleted address from the savedAddresses list
+      this.savedAddresses = this.savedAddresses.filter((addr) => addr.AddressId !== address.AddressId);
+      if (this.selectedAddress === address) {
+        this.selectedAddress = null;
+      }
+    }, error => {
+      alert('Error deleting address!');
+    });
+  }
+
+  // Proceed to payment method
   proceedToPay(): void {
     if (this.selectedAddress) {
-      // Here you would handle the payment logic, using the selected address
+      // Proceed with payment logic
       console.log('Payment successful for shipping to:', this.selectedAddress);
-      this.router.navigate(['/successpay']);  // Navigate to the payment page
+      this.router.navigate(['/successpay']);  // Navigate to the success page
       this.cartService.clearCart();
     } else {
       alert('Please select or enter an address for shipping.');
     }
   }
-  //payment logic
-  getCartTotal() {
-    return this.cartService.getCartTotal();
-  }
-
 }

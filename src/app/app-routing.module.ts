@@ -43,6 +43,7 @@ const routes: Routes = [
   {path:'signup',component:SignupComponent},
   {path:'login',component:LoginComponent},
   {path:'userlogin',component:UserloginComponent},
+  {path:'address',component:AddressComponent},
   {path:'aboutus',component:AboutusComponent},
   {path:'bookmark',component:BookmarkComponent,canActivate: [AuthGuard] },
   {path:'cart',component:CartComponent,canActivate: [AuthGuard]},

@@ -7,8 +7,10 @@
       <div class="category-container">
         <div class="category" *ngFor="let card of bookmarks">
           <div class="card">
-            <img [src]="card.Remediesimg" [alt]="card.RemedyName" class="remedy-img" />
-            <div class="card-content">
+ <img *ngIf="card.Remediesimg" 
+        [src]="'data:image/jpeg;base64,' + card.Remediesimg" 
+        width="400"height="200" alt="image not available" />
+   <span *ngIf="!card.Remediesimg">No Image</span>            <div class="card-content">
               <h4>{{ card.RemedyName }}</h4>
               <p>{{ card.Description }}</p>
               <p><strong>Benefits:</strong> {{ card.Benefits }}</p>

@@ -65,17 +65,7 @@
       </div>
     </div>
 
-    <!-- Profile Image -->
-    <div class="form-group">
-      <label for="userImage">Profile Image</label>
-      <input
-        id="userImage"
-        type="file"
-        (change)="onFileSelected($event)"
-        accept="image/*"
-        class="form-control"
-      />
-    </div>
+   
 
     <!-- Error Messages -->
     <div *ngIf="validationErrors.length > 0" class="error-messages">

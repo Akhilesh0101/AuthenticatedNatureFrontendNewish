@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
   checkRemindTime() {
     // Skip popup if user is logged in
     const user = this.userService.getStoredUserData() ;
-    if (user && user.username) {
+    if (user && user.UserName) {
       this.showPopup = false;
       return;  // Skip further logic if logged in
     }
@@ -83,7 +83,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
      // Show the popup after 20 seconds, only if the user is not authenticated
      const user = this.userService.getStoredUserData();
-     this.isLoggedIn = user && user.email ? true : false;
+     this.isLoggedIn = user && user.Email ? true : false;
      
      
     this.productService.getProducts();

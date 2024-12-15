@@ -1,92 +1,99 @@
 <h2 class="text-center">Review Your Order</h2>
-<div class="container">
-  <h2>Payment</h2>
+<div class="maindiv d-flex ">
+  <div class="container ">
+ 
 
-  <!-- Select existing address or enter a new address -->
-  <div>
-    <h3>Shipping Address</h3>
+    <!-- Shipping Address Section -->
+    <div class="ship">
+      <h3 class="text-center">Shipping Address</h3>
 
-    <!-- Button to allow the user to enter a new address -->
-    <button (click)="addNewAddress()">Enter New Address</button>
+      <!-- Button to allow the user to enter a new address -->
+      <a class="btn btn-primary mt-5 p-3" href="/address">Enter New Address</a>
 
-    <!-- Display existing saved addresses -->
-    <div *ngIf="!isNewAddress">
-      <h4>Saved Addresses</h4>
-      <ul>
-        <li *ngFor="let address of savedAddresses">
-          <div (click)="selectAddress(address)">
-            <strong>{{ address.street }}</strong>, {{ address.city }}, {{ address.country }}
-          </div>
-        </li>
-      </ul>
-      <div *ngIf="selectedAddress">
-        <p><strong>Selected Address:</strong></p>
-        <p>{{ selectedAddress.street }}, {{ selectedAddress.city }}, {{ selectedAddress.country }}</p>
+      <!-- Display existing saved addresses -->
+      <div *ngIf="!isNewAddress">
+        <h4 class="text-center mb-5
+        ">Saved Addresses</h4>
+        <ul>
+          <li *ngFor="let address of savedAddresses" (click)="selectAddress(address)" 
+              [class.selected]="selectedAddress === address">
+            <div>
+              <strong>{{ address.Street }}</strong>, {{ address.City }}, {{ address.Country }}
+              <button class="btn btn-danger btn-sm ml-3" (click)="deleteAddress(address)">Delete</button>
+            </div>
+          </li>
+        </ul>
+
+        <div *ngIf="selectedAddress">
+          <p><strong>Selected Address:</strong></p>
+          <p>{{ selectedAddress.Street }}, {{ selectedAddress.City }}, {{ selectedAddress.Country }}</p>
+        </div>
+      </div>
+
+      <!-- Form for entering a new address -->
+      <div *ngIf="isNewAddress">
+        <h4>Enter New Address</h4>
+        <form (ngSubmit)="saveNewAddress()">
+          <label for="street">Street:</label>
+          <input type="text" id="street" [(ngModel)]="newAddress.street" name="street" required />
+
+        
+          <label for="phone">Phone Number:</label>
+          <input type="text" id="phone" [(ngModel)]="newAddress.phone" name="phone" required />
+
+          <label for="city">City:</label>
+          <input type="text" id="city" [(ngModel)]="newAddress.city" name="city" required />
+
+          <label for="state">State:</label>
+          <input type="text" id="state" [(ngModel)]="newAddress.state" name="state" required />
+
+          <label for="country">Country:</label>
+          <input type="text" id="country" [(ngModel)]="newAddress.country" name="country" required />
+
+          <label for="zipCode">Zip Code:</label>
+          <input type="text" id="zipCode" [(ngModel)]="newAddress.zipCode" name="zipCode" required />
+
+          <button type="submit" class="btn btn-success">Save New Address</button>
+          <button type="button" class="btn btn-secondary" (click)="resetNewAddressForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    </div>
+    <!-- Payment Details -->
+     <div class="container">
+    <div class="payment-details">
+      <h3>Payment</h3>
+      <p>Shipping to: <strong>{{ selectedAddress ? selectedAddress.Street + ', ' + selectedAddress.City + ', ' + selectedAddress.Country : 'No address selected' }}</strong></p>
+    </div>
+
+    <!-- Cart Items Summary -->
+    <div *ngIf="cartItems.length > 0">
+      <h3 class="mb-4 text-dark">Order Summary</h3>
+      <div *ngFor="let item of cartItems">
+        <ul>
+          <li>
+            <div class="row">
+              <div class="col-md-4 col-sm-6">
+                <img *ngIf="item.product.ProductImage" [src]="'data:image/jpeg;base64,' + item.product.ProductImage" width="120" height="90" alt="image not available" />
+                <span *ngIf="!item.product.ProductImage">No Image</span>
+              </div>
+              <div class="col-md-8 col-sm-6" style="padding-top: 37px;">
+                <p><b>{{ item.product.ProductName }}</b> x <b class="text-danger">Quantity:</b> {{ item.quantity }} = {{ item.product.Price * item.quantity | currency: 'INR' }}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="total">
+        <h4>Total: {{ getCartTotal()| currency: 'INR'}}</h4>
+        <button class="btn btn-danger mt-4 mb-5" (click)="proceedToPay()">Proceed to Pay</button>
       </div>
     </div>
 
-    <!-- Form for entering a new address -->
-    <div *ngIf="isNewAddress">
-      <h4>Enter New Address</h4>
-      <form (ngSubmit)="saveNewAddress()">
-        <label for="street">Street:</label>
-        <input type="text" id="street" [(ngModel)]="newAddress.street" name="street" required />
-
-        <label for="phone">Phone Number:</label>
-        <input type="text" id="phone" [(ngModel)]="newAddress.phone" name="phone" required />
-
-        <label for="city">City:</label>
-        <input type="text" id="city" [(ngModel)]="newAddress.city" name="city" required />
-
-        <label for="state">State:</label>
-        <input type="text" id="state" [(ngModel)]="newAddress.state" name="state" required />
-
-        <label for="country">Country:</label>
-        <input type="text" id="country" [(ngModel)]="newAddress.country" name="country" required />
-
-        <label for="zipCode">Zip Code:</label>
-        <input type="text" id="zipCode" [(ngModel)]="newAddress.zipCode" name="zipCode" required />
-
-        <button type="submit">Save New Address</button>
-        <button type="button" (click)="resetNewAddressForm()">Cancel</button>
-      </form>
+    <!-- Cart Empty State -->
+    <div *ngIf="cartItems.length === 0">
+      <p>Your cart is empty.</p>
     </div>
-  </div>
-
-  <!-- Payment Details -->
-  <div class="payment-details">
-    <h3>Payment</h3>
-    <p>Shipping to: <strong>{{ selectedAddress ? selectedAddress.street + ', ' + selectedAddress.city + ', ' + selectedAddress.country : 'No address selected' }}</strong></p>
   </div>
 </div>
-
-<div *ngIf="cartItems.length === 0">
-  <p>Your cart is empty.</p>
-</div>
-<div class="container">
-    <h3 class="mb-4 text-dark">Order Summary</h3>
-    <div *ngFor="let item of cartItems">
-      <ul>
-        <li>
-          <div class="row">
-            <div class="col-md-4 col-sm-6">
-              <img *ngIf="item.product.ProductImage" 
-        [src]="'data:image/jpeg;base64,' + item.product.ProductImage" 
-        width="120"height="90" alt="image not available" />
-   <span *ngIf="!item.product.ProductImage">No Image</span>
-      
-            </div>
-            <div class="col-md-8 col-sm-6" style="padding-top: 37px;">
-              <p><b>{{ item.product.ProductName }}</b> x <b class="text-danger"> Quantity-</b> {{ item.quantity }} = {{ item.product.Price * item.quantity |currency:'INR' }}</p>
-
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div class="total">
-      <h4>Total: {{ getCartTotal() | currency: "INR" }}</h4>
-      <button class="btn btn-danger mt-4 mb-5" (click)="proceedToPay()">Proceed to Pay</button>
-    </div>
-  </div>
-  

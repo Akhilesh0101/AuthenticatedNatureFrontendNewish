@@ -18,28 +18,25 @@ export class UserService {
   }
   // Method to store user data in sessionStorage (or memory)
   storeUserData(user: User): void {
-    sessionStorage.setItem('userId', user.userId.toString());
-    sessionStorage.setItem('username', user.username);
-    sessionStorage.setItem('userImage', user.userImage);
-    sessionStorage.setItem('email', user.email);
-    sessionStorage.setItem('password',user.password);
+    sessionStorage.setItem('UserId', user.UserId.toString());
+    sessionStorage.setItem('UserName', user.UserName);
+    sessionStorage.setItem('Email', user.Email);
+    sessionStorage.setItem('Password',user.Password);
   }
 
   // Method to get user data from sessionStorage
   getStoredUserData(): User | null {
-    const userId = sessionStorage.getItem('userId');
-    const username = sessionStorage.getItem('username');
-    const userImage = sessionStorage.getItem('userImage');
-    const email = sessionStorage.getItem('email');
-    const password = sessionStorage.getItem('password')
+    const UserId = sessionStorage.getItem('UserId');
+    const UserName = sessionStorage.getItem('UserName');
+    const Email = sessionStorage.getItem('Email');
+    const Password = sessionStorage.getItem('Password')
 
-    if (userId && username && userImage && email && password) {
+    if (UserId && UserName && Email && Password) {
       return {
-        userId: parseInt(userId),
-        username: username,
-        userImage: userImage,
-        email: email,
-        password:password,
+        UserId: parseInt(UserId),
+        UserName: UserName,
+        Email: Email,
+        Password:Password,
       };
     }
     return null;
@@ -49,7 +46,6 @@ export class UserService {
   clearUserData(): void {
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('username');
-    sessionStorage.removeItem('userImage');
     sessionStorage.removeItem('email');
     sessionStorage.removeItem('password')
   }

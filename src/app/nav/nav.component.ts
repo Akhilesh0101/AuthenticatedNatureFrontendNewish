@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
+import { AutharizeService } from '../services/autharize.service';
+
 
 @Component({
   selector: 'app-nav',
@@ -12,18 +14,21 @@ import { Router } from '@angular/router';
 export class NavComponent implements OnInit{
   isLoggedIn: boolean = false;
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router,private authService: AutharizeService,) {}
   ngOnInit(): void {
-    // Check if the user is logged in by getting the user data
-    const currentUser = this.userService.getStoredUserData();
-    this.isLoggedIn = currentUser && currentUser.email ? true : false;
-  }
+    // Subscribe to login status observable
+    this.authService.loginStatus$.subscribe((status) => {
+      this.isLoggedIn = status;
+    });
+   }
 
   // Log the user out
   logout(): void {
-    this.userService.clearUserData;  // This clears the user data
-    this.isLoggedIn = false;  // Update the UI
-    this.router.navigate(['/']);  // Redirect to the home page after logout
+    this.authService.logout();
   }
 
 }
+
+ 
+
+

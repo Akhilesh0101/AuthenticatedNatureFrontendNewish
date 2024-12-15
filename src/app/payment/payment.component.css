@@ -49,4 +49,16 @@
   .payment-details {
     margin-top: 20px;
   }
+
+  .maindiv
+  {
+    padding: 100px;
+  }
+
+  /* .ship
+  {
+   display: flex-row;
+   justify-content:space-evenly;
+
+  } */
   

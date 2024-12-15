@@ -13,7 +13,8 @@
     <div class="navbar-right d-flex justify-content-between align-items-center">
       <button *ngIf="!isLoggedIn" mat-raised-button class="animated-btn" routerLink="signup">Login / Signup</button>
       
-      <a routerLink="user"><i class="bi bi-person-circle text-dark" style="margin-left:20px; margin-right: 20px;"></i></a>
+      <a *ngIf="isLoggedIn" routerLink="user"><i class="bi bi-person-circle text-dark" style="margin-left:20px; margin-right: 20px;"></i></a>
+      <a *ngIf="isLoggedIn" routerLink="bookmark"><i class="bi bi-bookmark-fill text-dark" style="margin-right: 20px;"></i></a>
       <a *ngIf="isLoggedIn" routerLink="cart"><i class="bi bi-cart-fill text-dark" style="margin-right: 20px;"></i></a>
       <button *ngIf="isLoggedIn" mat-raised-button class="animated-btn" (click)="logout()">Logout</button>
     </div>

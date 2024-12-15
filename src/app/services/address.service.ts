@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +24,16 @@ export class AddressService {
 
   // Update an existing address
   updateAddress(address: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${address.AddressID}`, address);
+    return this.http.put<any>(`${this.apiUrl}/${address.AddressId}`, address);
   }
 
   // Remove an address by ID
-  removeAddress(address: any): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${address.AddressID}`);
+  removeAddress(AddressId: number): Observable<any> {
+    console.log(`Removing address with ID: ${AddressId}`); // Log the ID being sent
+    return this.http.delete<any>(`${this.apiUrl}/${AddressId}`)
+      .pipe(catchError(error => {
+        console.error('Error removing address:', error);
+        return throwError(error); // Propagate the error
+      }));
   }
 }

@@ -16,11 +16,18 @@ export class AutharizeService {
   private apiUrlSignup = 'https://localhost:44348/api/Auth/signup';  // User signup API URL
   private apiUrlProfile = 'https://localhost:44348/api/Users'; // Get user profile data API URL
 
+  private loginStatus = new BehaviorSubject<boolean>(this.isAuthenticated());
+  loginStatus$ = this.loginStatus.asObservable();
   constructor(
     private http: HttpClient,
     private router: Router,
     private jwtHelper: JwtHelperService
   ) {}
+
+  // Update login status
+  updateLoginStatus(isLoggedIn: boolean): void {
+    this.loginStatus.next(isLoggedIn);
+  }
 
   // Admin Login (username, email, password)
   loginAdmin(username: string, email: string, password: string): Observable<any> {
@@ -81,19 +88,21 @@ export class AutharizeService {
     return sessionStorage.getItem('authToken') !== null;
   }
 
-  // Log out the user
-  logout(): void {
-    sessionStorage.removeItem('authToken');
-    sessionStorage.removeItem('role');
-    this.router.navigate(['/home']);
-  }
+ // Log out the user
+ logout(): void {
+  sessionStorage.removeItem('authToken');
+  sessionStorage.removeItem('role');
+  this.updateLoginStatus(false); // Update login status
+  this.router.navigate(['/home']);
+}
 
-  // Store token and role data
-  storeAuthData(token: string, role: string): void {
-    sessionStorage.setItem('authToken', token);
-    sessionStorage.setItem('role', role);
-  }
+ // Store token and role data
+ storeAuthData(token: string, role: string): void {
+  sessionStorage.setItem('authToken', token);
+  sessionStorage.setItem('role', role);
+  this.updateLoginStatus(true); // Update login status
 
+}
   // Get the user's role from the stored session token
   getRole(): string {
     return sessionStorage.getItem('role') || '';

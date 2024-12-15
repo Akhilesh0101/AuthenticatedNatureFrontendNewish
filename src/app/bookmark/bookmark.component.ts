@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BookmarkService } from '../services/bookmark.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-bookmark',
-  standalone: false,
+  standalone: true,
   
   templateUrl: './bookmark.component.html',
+  imports:[CommonModule],
   styleUrl: './bookmark.component.css'
 })
 export class BookmarkComponent implements OnInit {
